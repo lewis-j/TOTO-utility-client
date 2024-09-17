@@ -1,0 +1,246 @@
+:root {
+  --primary-color: #0078d4;
+  --sidebar-bg: #f3f2f1;
+  --main-bg: #ffffff;
+  --text-color: #323130;
+  --border-color: #edebe9;
+  --hover-color: #f5f5f5;
+  --max-content-width: 1200px;
+  --sidebar-width: 250px;
+  --selected-items-width: 300px;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-color);
+  background-color: var(--main-bg);
+  font-size: 14px;
+}
+
+.App {
+  display: flex;
+  height: 100vh;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg);
+  padding: 20px;
+  overflow-y: auto;
+  border-right: 1px solid var(--border-color);
+}
+
+.main-container {
+  flex-grow: 1;
+  display: flex;
+  overflow-y: hidden;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  border-right: 1px solid var(--border-color);
+  overflow-y: auto;
+}
+
+.selected-items-panel {
+  width: var(--selected-items-width);
+  padding: 20px;
+  background-color: var(--sidebar-bg);
+  overflow-y: auto;
+}
+
+.sidebar-header h2,
+.main-content h2,
+.selected-items-panel h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.new-list-form,
+.new-item-form {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.new-list-form input,
+.new-item-form input {
+  flex-grow: 1;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.new-list-form button,
+.new-item-form button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin-left: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.list-menu,
+.item-list,
+.selected-item-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.list-menu li,
+.item-list li,
+.selected-item-list li {
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.list-menu li:hover,
+.item-list li:hover,
+.selected-item-list li:hover {
+  background-color: var(--hover-color);
+}
+
+.list-menu li.active {
+  background-color: var(--hover-color);
+  font-weight: bold;
+}
+
+.item-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: transparent;
+  padding: 0;
+}
+
+.checkbox.checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.remove-btn {
+  background-color: transparent;
+  color: var(--text-color);
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.remove-btn:hover {
+  opacity: 1;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  padding: 20px;
+  background-color: var(--main-bg);
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+  max-width: calc(var(--max-content-width) - var(--sidebar-width));
+  margin: 0 auto;
+}
+
+.microsoft-todo-integration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.microsoft-todo-integration select {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.microsoft-todo-integration button,
+.footer button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.microsoft-todo-integration button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1200px) {
+  .App {
+    max-width: 100%;
+  }
+
+  .footer {
+    max-width: calc(100% - var(--sidebar-width));
+  }
+}
+
+@media (max-width: 992px) {
+  .main-container {
+    flex-direction: column;
+  }
+
+  .selected-items-panel {
+    width: auto;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .footer {
+    position: static;
+    max-width: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .App {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .footer {
+    left: 0;
+  }
+}
