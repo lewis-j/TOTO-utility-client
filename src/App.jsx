@@ -217,7 +217,7 @@ function App() {
 
   const checkAuthStatus = async () => {
     try {
-      await axios.get(`${API_URL}/api/todo/lists`, { withCredentials: true });
+      await axios.get(`${API_URL}/todo/lists`, { withCredentials: true });
       setIsAuthenticated(true);
     } catch (error) {
       console.error(error);
@@ -231,7 +231,7 @@ function App() {
 
   const fetchLists = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/lists`);
+      const response = await axios.get(`${API_URL}/lists`);
       setLists(response.data);
     } catch (error) {
       console.error(
@@ -244,7 +244,7 @@ function App() {
 
   const createList = async (name) => {
     try {
-      await axios.post(`${API_URL}/api/lists`, { name });
+      await axios.post(`${API_URL}/lists`, { name });
       fetchLists();
     } catch (error) {
       console.error(
@@ -257,7 +257,7 @@ function App() {
 
   const addItemToList = async (listId, itemName) => {
     try {
-      await axios.post(`${API_URL}/api/lists/${listId}/items`, {
+      await axios.post(`${API_URL}/lists/${listId}/items`, {
         name: itemName,
       });
       fetchLists();
@@ -272,7 +272,7 @@ function App() {
 
   const removeItemFromList = async (listId, itemId) => {
     try {
-      await axios.delete(`${API_URL}/api/lists/${listId}/items/${itemId}`);
+      await axios.delete(`${API_URL}/lists/${listId}/items/${itemId}`);
       fetchLists();
     } catch (error) {
       console.error(
