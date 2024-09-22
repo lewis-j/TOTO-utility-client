@@ -14,6 +14,8 @@ const prod_URL = import.meta.env.VITE_API_URL;
 
 const API_URL = prod_URL ? prod_URL : dev_URL || "http://localhost:3001";
 
+console.log("API URL", API_URL);
+
 function Sidebar({ lists, onCreateList, onSelectList, selectedListId }) {
   const [newListName, setNewListName] = useState("");
 
@@ -148,7 +150,7 @@ function MicrosoftTodoIntegration({ selectedItems }) {
 
   const fetchTodoLists = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/todo/lists`, {
+      const response = await axios.get(`${API_URL}/todo/lists`, {
         withCredentials: true,
       });
       setTodoLists(response.data);
