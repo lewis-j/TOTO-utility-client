@@ -337,11 +337,11 @@ function App() {
         {isAuthenticated ? (
           <>
             <MicrosoftTodoIntegration selectedItems={selectedItems} />
-            <button onClick={handleTestButton}>Test API</button>
           </>
         ) : (
           <button onClick={handleLogin}>Login with Microsoft</button>
         )}
+        <button onClick={handleTestButton}>Test API</button>
       </div>
     </div>
   );
