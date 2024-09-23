@@ -299,6 +299,19 @@ function App() {
 
   const selectedList = lists.find((list) => list._id === selectedListId);
 
+  const handleTestButton = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/test`, {
+        withCredentials: true,
+      });
+      console.log("Test response:", response.data);
+      alert("Test successful! Check the console for details.");
+    } catch (error) {
+      console.error("Test error:", error.response?.data || error.message);
+      alert("Test failed. Check the console for details.");
+    }
+  };
+
   return (
     <div className="App">
       <Sidebar
@@ -322,7 +335,10 @@ function App() {
       </div>
       <div className="footer">
         {isAuthenticated ? (
-          <MicrosoftTodoIntegration selectedItems={selectedItems} />
+          <>
+            <MicrosoftTodoIntegration selectedItems={selectedItems} />
+            <button onClick={handleTestButton}>Test API</button>
+          </>
         ) : (
           <button onClick={handleLogin}>Login with Microsoft</button>
         )}
