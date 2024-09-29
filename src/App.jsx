@@ -16,6 +16,8 @@ const API_URL = prod_URL ? prod_URL : dev_URL || "http://localhost:3001";
 
 console.log("API URL", API_URL);
 
+axios.defaults.withCredentials = true;
+
 function Sidebar({ lists, onCreateList, onSelectList, selectedListId }) {
   const [newListName, setNewListName] = useState("");
 
@@ -150,9 +152,7 @@ function MicrosoftTodoIntegration({ selectedItems }) {
 
   const fetchTodoLists = async () => {
     try {
-      const response = await axios.get(`${API_URL}/todo/lists`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(`${API_URL}/todo/lists`);
       setTodoLists(response.data);
     } catch (error) {
       console.error("Error fetching To Do lists:", error);
@@ -166,13 +166,9 @@ function MicrosoftTodoIntegration({ selectedItems }) {
     }
 
     try {
-      await axios.post(
-        `${API_URL}/todo/lists/${selectedTodoList}/tasks`,
-        {
-          items: selectedItems,
-        },
-        { withCredentials: true }
-      );
+      await axios.post(`${API_URL}/todo/lists/${selectedTodoList}/tasks`, {
+        items: selectedItems,
+      });
       alert("Items added to Microsoft To Do successfully!");
     } catch (error) {
       console.error("Error adding items to To Do list:", error);
@@ -219,7 +215,7 @@ function App() {
 
   const checkAuthStatus = async () => {
     try {
-      await axios.get(`${API_URL}/todo/lists`, { withCredentials: true });
+      await axios.get(`${API_URL}/todo/lists`);
       setIsAuthenticated(true);
     } catch (error) {
       console.error(error);
