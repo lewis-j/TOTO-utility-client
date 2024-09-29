@@ -18,7 +18,13 @@ console.log("API URL", API_URL);
 
 axios.defaults.withCredentials = true;
 
-function Sidebar({ lists, onCreateList, onSelectList, selectedListId }) {
+function Sidebar({
+  lists,
+  onCreateList,
+  onSelectList,
+  selectedListId,
+  onDeleteList,
+}) {
   const [newListName, setNewListName] = useState("");
 
   const handleCreateList = () => {
@@ -50,9 +56,16 @@ function Sidebar({ lists, onCreateList, onSelectList, selectedListId }) {
           <li
             key={list._id}
             className={list._id === selectedListId ? "active" : ""}
-            onClick={() => onSelectList(list._id)}
           >
-            <FaList /> {list.name}
+            <div onClick={() => onSelectList(list._id)}>
+              <FaList /> {list.name}
+            </div>
+            <button
+              onClick={() => onDeleteList(list._id)}
+              className="delete-list-btn"
+            >
+              <FaTrash />
+            </button>
           </li>
         ))}
       </ul>
@@ -308,6 +321,23 @@ function App() {
     }
   };
 
+  const deleteList = async (listId) => {
+    try {
+      await axios.delete(`${API_URL}/lists/${listId}`);
+      setLists(lists.filter((list) => list._id !== listId));
+      if (selectedListId === listId) {
+        setSelectedListId(null);
+      }
+      alert("List deleted successfully!");
+    } catch (error) {
+      console.error(
+        "Error deleting list:",
+        error.response?.data || error.message
+      );
+      alert("Failed to delete list. Please try again.");
+    }
+  };
+
   return (
     <div className="App">
       <Sidebar
@@ -315,6 +345,7 @@ function App() {
         onCreateList={createList}
         onSelectList={setSelectedListId}
         selectedListId={selectedListId}
+        onDeleteList={deleteList}
       />
       <div className="main-container">
         <MainContent
