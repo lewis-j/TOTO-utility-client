@@ -7,8 +7,11 @@ import {
   FaCheck,
   FaMicrosoft,
   FaTimes,
+  FaListUl, // Add this import
 } from "react-icons/fa";
 import "./App.css";
+import SignInPage from "./components/SignInPage/SignInPage";
+
 const dev_URL = import.meta.env.VITE_API_URL_DEV;
 const prod_URL = import.meta.env.VITE_API_URL;
 
@@ -51,24 +54,28 @@ function Sidebar({
           <FaPlus />
         </button>
       </div>
-      <ul className="list-menu">
-        {lists.map((list) => (
-          <li
-            key={list._id}
-            className={list._id === selectedListId ? "active" : ""}
+      <div className="list-menu">
+        <select
+          value={selectedListId || ""}
+          onChange={(e) => onSelectList(e.target.value)}
+          className="list-select"
+        >
+          <option value="">Select a list</option>
+          {lists.map((list) => (
+            <option key={list._id} value={list._id}>
+              {list.name}
+            </option>
+          ))}
+        </select>
+        {selectedListId && (
+          <button
+            onClick={() => onDeleteList(selectedListId)}
+            className="delete-list-btn"
           >
-            <div onClick={() => onSelectList(list._id)}>
-              <FaList /> {list.name}
-            </div>
-            <button
-              onClick={() => onDeleteList(list._id)}
-              className="delete-list-btn"
-            >
-              <FaTrash />
-            </button>
-          </li>
-        ))}
-      </ul>
+            <FaTrash />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -104,53 +111,68 @@ function MainContent({
               <FaPlus />
             </button>
           </div>
-          <ul className="item-list">
-            {selectedList.items.map((item) => (
-              <li key={item._id}>
-                <div className="item-content">
+          <div className="item-list-container">
+            <ul className="item-list">
+              {selectedList.items.map((item) => (
+                <li key={item._id}>
+                  <div className="item-content">
+                    <button
+                      className={`checkbox ${
+                        selectedItems.some((i) => i._id === item._id)
+                          ? "checked"
+                          : ""
+                      }`}
+                      onClick={() => onToggleSelect(item)}
+                    >
+                      {selectedItems.some((i) => i._id === item._id) && (
+                        <FaCheck />
+                      )}
+                    </button>
+                    <span>{item.name}</span>
+                  </div>
                   <button
-                    className={`checkbox ${
-                      selectedItems.some((i) => i._id === item._id)
-                        ? "checked"
-                        : ""
-                    }`}
-                    onClick={() => onToggleSelect(item)}
+                    className="remove-btn"
+                    onClick={() => onRemoveItem(selectedList._id, item._id)}
                   >
-                    {selectedItems.some((i) => i._id === item._id) && (
-                      <FaCheck />
-                    )}
+                    <FaTrash />
                   </button>
-                  <span>{item.name}</span>
-                </div>
-                <button
-                  className="remove-btn"
-                  onClick={() => onRemoveItem(selectedList._id, item._id)}
-                >
-                  <FaTrash />
-                </button>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
         </>
       )}
     </div>
   );
 }
 
-function SelectedItemsPanel({ selectedItems, onRemoveSelectedItem }) {
+function SelectedItemsPanel({
+  selectedItems,
+  onRemoveSelectedItem,
+  isOpen,
+  onClose,
+}) {
+  if (!isOpen) return null;
+
   return (
-    <div className="selected-items-panel">
-      <h2>Selected Items</h2>
-      <ul className="selected-item-list">
-        {selectedItems.map((item) => (
-          <li key={item._id}>
-            <span>{item.name}</span>
-            <button onClick={() => onRemoveSelectedItem(item)}>
-              <FaTimes />
-            </button>
-          </li>
-        ))}
-      </ul>
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <button className="close-btn" onClick={onClose}>
+          <FaTimes />
+        </button>
+        <h2>Selected Items</h2>
+        <ul className="selected-item-list">
+          {selectedItems.map((item) => (
+            <li key={item._id}>
+              <span>{item.name}</span>
+              <button onClick={() => onRemoveSelectedItem(item)}>
+                <FaTimes />
+              </button>
+            </li>
+          ))}
+        </ul>
+        <MicrosoftTodoIntegration selectedItems={selectedItems} />
+      </div>
     </div>
   );
 }
@@ -220,19 +242,23 @@ function App() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedListId, setSelectedListId] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   useEffect(() => {
     checkAuthStatus();
-    fetchLists();
   }, []);
 
   const checkAuthStatus = async () => {
     try {
       await axios.get(`${API_URL}/todo/lists`);
       setIsAuthenticated(true);
+      fetchLists();
     } catch (error) {
       console.error(error);
       setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -308,19 +334,6 @@ function App() {
 
   const selectedList = lists.find((list) => list._id === selectedListId);
 
-  const handleTestButton = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/test`, {
-        withCredentials: true,
-      });
-      console.log("Test response:", response.data);
-      alert("Test successful! Check the console for details.");
-    } catch (error) {
-      console.error("Test error:", error.response?.data || error.message);
-      alert("Test failed. Check the console for details.");
-    }
-  };
-
   const deleteList = async (listId) => {
     try {
       await axios.delete(`${API_URL}/lists/${listId}`);
@@ -338,16 +351,34 @@ function App() {
     }
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return <SignInPage onLogin={handleLogin} />;
+  }
+
   return (
     <div className="App">
-      <Sidebar
-        lists={lists}
-        onCreateList={createList}
-        onSelectList={setSelectedListId}
-        selectedListId={selectedListId}
-        onDeleteList={deleteList}
-      />
+      <div className="app-header">
+        <h1>ListMaster</h1>
+        <button
+          className="selected-items-btn"
+          onClick={() => setIsPanelOpen(true)}
+        >
+          <FaListUl />
+          <span className="item-count">{selectedItems.length}</span>
+        </button>
+      </div>
       <div className="main-container">
+        <Sidebar
+          lists={lists}
+          onCreateList={createList}
+          onSelectList={setSelectedListId}
+          selectedListId={selectedListId}
+          onDeleteList={deleteList}
+        />
         <MainContent
           selectedList={selectedList}
           onAddItem={addItemToList}
@@ -355,21 +386,13 @@ function App() {
           onToggleSelect={toggleItemSelection}
           selectedItems={selectedItems}
         />
-        <SelectedItemsPanel
-          selectedItems={selectedItems}
-          onRemoveSelectedItem={removeSelectedItem}
-        />
       </div>
-      <div className="footer">
-        {isAuthenticated ? (
-          <>
-            <MicrosoftTodoIntegration selectedItems={selectedItems} />
-          </>
-        ) : (
-          <button onClick={handleLogin}>Login with Microsoft</button>
-        )}
-        <button onClick={handleTestButton}>Test API</button>
-      </div>
+      <SelectedItemsPanel
+        selectedItems={selectedItems}
+        onRemoveSelectedItem={removeSelectedItem}
+        isOpen={isPanelOpen}
+        onClose={() => setIsPanelOpen(false)}
+      />
     </div>
   );
 }
