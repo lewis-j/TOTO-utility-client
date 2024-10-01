@@ -22,6 +22,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow: hidden; /* Add this line */
 }
 
 .app-header {
@@ -159,7 +160,9 @@ body {
 
 .new-list-form,
 .new-item-form {
+  width: 90%;
   display: flex;
+  max-width: 300px;
   margin-bottom: 20px;
 }
 
@@ -325,7 +328,7 @@ body {
 
 @media (max-width: 1200px) {
   .App {
-    max-width: 100%;
+    width: 100vw;
   }
 
   .footer {
@@ -336,11 +339,14 @@ body {
 @media (max-width: 992px) {
   .main-container {
     flex-direction: column;
+    height: 100%; /* Add this line */
+    overflow: hidden; /* Add this line */
   }
 
   .sidebar,
   .main-content {
     width: 100%;
+    overflow-y: auto; /* Add this line */
   }
 
   .selected-items-panel {
@@ -373,6 +379,7 @@ body {
 .list-menu {
   margin-top: 20px;
   display: flex;
+  max-width: 300px;
   align-items: center;
 }
 
@@ -482,12 +489,13 @@ body {
 
 .new-item-form {
   margin-bottom: 1rem;
+  width: 90%;
 }
 
 .item-list-container {
   flex-grow: 1;
   overflow-y: auto;
-  max-height: calc(100vh - 300px); /* Adjust this value as needed */
+  /* Remove the max-height property */
 }
 
 .item-list {
